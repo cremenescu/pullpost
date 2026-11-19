@@ -1,0 +1,18 @@
+.DS_Store
+
+# Media never belongs in the repo: posts belong to their authors
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.heic
+*.mp4
+*.mov
+
+# The app's data (database, downloaded posts, the Instagram session) and this machine's config
+data/
+config/config.local.php
+.env
+
+# Python bytecode
+__pycache__/

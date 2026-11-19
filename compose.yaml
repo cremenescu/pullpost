@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# docker compose up -d --build, then open http://<this machine>:8080 and enter the setup code
+# shown by: docker compose logs web
+# Settings come from the environment or from a .env file next to this one (see README.md).
+name: pullpost
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PULLPOST_PORT:-8080}:80"
+    environment:
+      TZ: ${TZ:-UTC}
+      PULLPOST_ENGINE_URL: http://engine:8898
+      PULLPOST_TRUST_PROXY: ${PULLPOST_TRUST_PROXY:-0}
+    volumes:
+      - data:/data
+    depends_on:
+      - engine
+    security_opt:
+      - no-new-privileges:true
+
+  # Headless Chromium behind a small HTTP API. It has no authentication of its own, so it publishes
+  # no port: only the web container reaches it, on the compose network. Chromium runs without its
+  # own sandbox; the container is the boundary: no capabilities, no new privileges, a memory cap.
+  engine:
+    build: ./engine
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - data:/data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    shm_size: 256m
+    mem_limit: 1536m
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8898/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  data:

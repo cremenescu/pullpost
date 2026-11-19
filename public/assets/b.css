@@ -1,0 +1,284 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Theme B, "receipt": the link goes into a till's display, and every fetch prints a receipt that
+   lists each file as a line item with its size; the total is the ZIP, and the ZIP is a coupon you tear
+   off. Earlier receipts sit on the spike. One family, Martian Mono, used at different widths. */
+:root {
+  --counter: #c9ced2;
+  --counter-2: #b8bec3;
+  --counter-ink: #22262a;
+  --counter-mute: #4b5259;
+  --term: #2c3034;
+  --term-2: #212427;
+  --term-ink: #dfe3e6;
+  --term-mute: #9ba2a9;
+  --vfd-bg: #0b1513;
+  --vfd: #6ff2d0;
+  --vfd-dim: #3f8a77;
+  --ok: #2f9e5b;
+  --ok-edge: #1d6a3b;
+  --paper: #fbfbf8;
+  --paper-ink: #24272b;
+  --paper-mute: #5d636a;
+  --paper-rule: #8d9298;
+  --stamp: #2f4fcf;
+  --decline: #c62f38;
+  --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* the sheet (base.css): receipt paper */
+  --s-bg: var(--paper);
+  --s-ink: var(--paper-ink);
+  --s-mute: var(--paper-mute);
+  --s-line: #c9ccd0;
+  --s-soft: #efefea;
+  --s-accent: var(--paper-ink);
+  --s-accent-ink: var(--paper);
+  --s-danger: var(--decline);
+  --s-font: var(--mono);
+  --s-data: var(--mono);
+  --s-radius: 0;
+  --s-shadow: none;
+  --in-bg: #fff;
+  --in-line: var(--paper-rule);
+  --focus: var(--stamp);
+  --toast-bg: var(--vfd-bg);
+  --toast-ink: var(--vfd);
+  --backdrop: rgba(20, 22, 25, .55);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --counter: #2b3034;
+    --counter-2: #23272b;
+    --counter-ink: #e4e7ea;
+    --counter-mute: #a7aeb5;
+    --term: #3b4046;
+    --term-2: #2c3035;
+    --paper: #e9e8e3;
+    --paper-ink: #202326;
+    --paper-mute: #565c63;
+    --stamp: #2c49c0;
+    --s-line: #bfc2c5;
+    --s-soft: #dedcd6;
+    --in-bg: #f4f3ef;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--counter-2); }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; color: var(--counter-ink);
+  font: 400 13px/1.55 var(--mono);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .07) 0 1px, transparent 1px 3px),
+    linear-gradient(170deg, var(--counter), var(--counter-2)); background-attachment: fixed; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+.i { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round; }
+:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ header and footer, printed on the counter */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding: 16px 28px; }
+.brand { font-size: 19px; font-weight: 750; font-stretch: 112.5%; letter-spacing: -.02em; text-decoration: none; }
+.nav { display: flex; align-items: center; gap: 2px; }
+.nav a { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: 4px; text-decoration: none;
+  font-size: 12.5px; font-weight: 550; font-stretch: 87.5%; }
+.nav a:hover { background: rgba(0, 0, 0, .07); }
+.lang { display: inline-flex; margin: 0 6px; border: 1.5px solid currentColor; border-radius: 4px; overflow: hidden; }
+.lang button { border: 0; background: none; padding: 3px 8px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.lang button.on { background: var(--counter-ink); color: var(--counter); }
+.foot { padding: 18px 28px 24px; color: var(--counter-mute); font-size: 11.5px; font-stretch: 87.5%; max-width: 72ch; }
+
+/* ------------------------------------------------------------------ the desk */
+.desk { flex: 1; display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 36px 48px; align-items: start;
+  width: 100%; max-width: 1180px; margin: 0 auto; padding: 8px 28px 28px; }
+.left { display: grid; gap: 34px; }
+
+/* The till: a display for the link and an OK key. */
+.till { background: var(--term); color: var(--term-ink); border-radius: 14px; padding: 16px 16px 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 -3px 0 rgba(0, 0, 0, .35) inset, 0 14px 26px -14px rgba(0, 0, 0, .55); }
+.vfd { background: var(--vfd-bg); color: var(--vfd); border-radius: 6px; padding: 10px 12px 9px; font-size: 13px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .6) inset, 0 0 0 1px #000;
+  background-image: radial-gradient(rgba(111, 242, 208, .07) 1px, transparent 1.2px); background-size: 3px 3px; }
+.vfd input { display: block; width: 100%; border: 0; background: none; outline: none; color: var(--vfd); caret-color: var(--vfd);
+  font-size: 13px; font-stretch: 87.5%; padding: 0; text-overflow: ellipsis; }
+.vfd input::placeholder { color: var(--vfd-dim); }
+.vfd:focus-within { outline: 2px solid var(--vfd-dim); outline-offset: 2px; }
+.vfd .l2 { display: flex; gap: 10px; margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(111, 242, 208, .25);
+  font-size: 11.5px; font-stretch: 87.5%; white-space: nowrap; overflow: hidden; }
+.vfd .l2 .blk { letter-spacing: -.5px; margin-left: auto; }
+.vfd.err .l2 { color: #ff8a8f; }
+.keys { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+.keys .hint { flex: 1; margin: 0; color: var(--term-mute); font-size: 11px; line-height: 1.5; font-stretch: 87.5%; }
+.ok { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px 10px; border: 0; border-radius: 8px; cursor: pointer;
+  background: var(--ok); color: #fff; font-size: 14px; font-weight: 750; font-stretch: 100%;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .3) inset, 0 4px 0 var(--ok-edge), 0 6px 8px -2px rgba(0, 0, 0, .5);
+  transform: translateY(-2px); transition: transform .06s, box-shadow .06s; }
+.ok:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(255, 255, 255, .3) inset, 0 1px 0 var(--ok-edge); }
+.ok .ret { font-size: 16px; line-height: 1; }
+
+/* ------------------------------------------------------------------ the printer and the receipt */
+.printer { justify-self: center; width: 100%; max-width: 440px; }
+.slot { height: 22px; margin: 0 -14px; border-radius: 8px 8px 4px 4px; background: var(--term);
+  box-shadow: 0 -2px 0 rgba(255, 255, 255, .1) inset, 0 6px 10px -6px rgba(0, 0, 0, .5); position: relative; z-index: 2; }
+.slot::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 5px; height: 4px; border-radius: 2px; background: #0d0f10; }
+.empty { padding: 34px 6px 0; color: var(--counter-mute); }
+.empty b { display: block; color: var(--counter-ink); font-size: 15px; font-stretch: 100%; margin-bottom: 4px; }
+.paper { filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .25)); margin-top: -6px; position: relative; z-index: 1; }
+.receipt { position: relative; background: var(--paper); color: var(--paper-ink); padding: 26px 26px 18px; font-stretch: 87.5%; }
+.paper::after { content: ""; display: block; height: 10px;
+  background: linear-gradient(135deg, var(--paper) 5px, transparent 0) 0 0 / 10px 10px repeat-x,
+              linear-gradient(-135deg, var(--paper) 5px, transparent 0) 0 0 / 10px 10px repeat-x; }
+.paper.printing::after { display: none; }
+.paper.printing .receipt { -webkit-mask-image: linear-gradient(#000 calc(100% - 46px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 46px), transparent); padding-bottom: 46px; }
+.r-head { text-align: center; padding-bottom: 12px; }
+.r-head .shop { display: block; font-size: 22px; font-weight: 800; font-stretch: 112.5%; letter-spacing: .02em; }
+.r-head .tagline { display: block; color: var(--paper-mute); font-size: 11.5px; }
+.rule { border: 0; border-top: 1.5px dashed var(--paper-rule); margin: 12px 0; }
+.rule.double { border-top: 4px double var(--paper-ink); }
+.line { display: flex; align-items: baseline; gap: 0; }
+.line .lead { flex: 1; min-width: 12px; margin: 0 6px; border-bottom: 2px dotted var(--paper-rule); transform: translateY(-4px); }
+.line .k { color: var(--paper-mute); }
+.line .v { text-align: right; overflow-wrap: anywhere; }
+.log { color: var(--paper-mute); }
+.thumbs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 14px 0 12px; }
+.thumbs a, .thumbs span { position: relative; display: block; aspect-ratio: 1440 / 2546; overflow: hidden; background: #e6e6e1; }
+/* Thermal print: grey, hard, and screened into dots. */
+.thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.35) brightness(1.06);
+  mix-blend-mode: multiply; }
+.thumbs a::after { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle, transparent .8px, rgba(251, 251, 248, .5) 1.1px) 0 0 / 3px 3px; }
+.thumbs span { background: none; outline: 1.5px dashed var(--paper-rule); outline-offset: -1.5px; }
+.thumbs.one { grid-template-columns: minmax(0, 150px); justify-content: center; }
+.thumbs .i { position: absolute; z-index: 1; left: 50%; top: 50%; width: 30px; height: 30px; transform: translate(-50%, -50%);
+  fill: var(--paper); stroke: var(--paper-ink); stroke-width: 1.5; }
+.items { list-style: none; margin: 0; padding: 0; }
+.items li { display: flex; align-items: baseline; padding: 1px 0; }
+.items .n { font-weight: 750; margin-right: 10px; }
+.items .lead { flex: 1; min-width: 10px; margin: 0 6px; border-bottom: 2px dotted var(--paper-rule); transform: translateY(-4px); }
+.items a { display: inline-flex; margin-left: 8px; padding: 2px; border-radius: 3px; transform: translateY(2px); }
+.items a:hover { background: rgba(0, 0, 0, .07); }
+.items .cursor { display: inline-block; width: .6em; height: 1.05em; background: var(--paper-ink); vertical-align: -2px;
+  animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.total { display: flex; align-items: baseline; font-size: 15px; font-weight: 800; font-stretch: 100%; }
+.total .lead { flex: 1; }
+.coupon { position: relative; margin: 18px -10px 4px; padding: 16px 12px 14px; border: 2px dashed var(--paper-rule); border-radius: 4px; }
+.coupon .sc { position: absolute; top: -12px; left: 14px; padding: 0 6px; background: var(--paper); font-size: 15px; line-height: 20px; }
+.coupon .what { margin: 0 0 10px; font-weight: 700; }
+.get { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 12px 14px; border-radius: 4px;
+  background: var(--paper-ink); color: var(--paper); text-decoration: none; font-weight: 750; font-size: 13.5px; font-stretch: 100%; }
+.get:hover { background: #000; }
+.coupon .fn { display: block; margin-top: 8px; color: var(--paper-mute); font-size: 11px; overflow-wrap: anywhere; }
+.bars { display: block; width: 100%; height: 44px; margin: 18px 0 2px; color: var(--paper-ink); }
+.bcode { text-align: center; letter-spacing: .3em; font-size: 12px; }
+.r-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 6px; margin-top: 14px; }
+.r-acts button, .r-acts a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1.5px solid var(--paper-rule);
+  border-radius: 3px; background: none; color: var(--paper-ink); text-decoration: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.r-acts button:hover, .r-acts a:hover { border-color: var(--paper-ink); }
+.r-acts .main { background: var(--paper-ink); border-color: var(--paper-ink); color: var(--paper); }
+.r-acts .del { color: var(--decline); }
+.msg { margin: 6px 0 0; }
+.msg b { display: block; font-size: 15px; font-stretch: 100%; margin-bottom: 6px; }
+.acct { display: block; margin-top: 14px; color: var(--paper-mute); font-size: 11.5px; }
+/* The rubber stamp, inked by the #ink filter in the page. */
+.stamp { position: absolute; top: 78px; right: 14px; padding: 6px 13px 5px; border: 3px solid currentColor; border-radius: 7px;
+  color: var(--stamp); font-size: 19px; font-weight: 800; font-stretch: 112.5%; letter-spacing: .06em; text-transform: uppercase;
+  transform: rotate(-11deg); box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 3.5px currentColor;
+  mix-blend-mode: multiply; opacity: .9; filter: url(#ink); pointer-events: none; }
+.stamp.no { color: var(--decline); top: 64px; }
+
+/* ------------------------------------------------------------------ the spike: earlier receipts */
+.spike h2 { margin: 0 0 14px; font-size: 13px; font-weight: 750; font-stretch: 100%; }
+.spike ul { position: relative; list-style: none; margin: 0; padding: 0 0 0 0; display: grid; gap: 10px; }
+.stub { position: relative; display: block; text-decoration: none; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .2)); }
+.stub .s { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 12px; align-items: center;
+  background: var(--paper); color: var(--paper-ink); padding: 12px 14px 8px 12px; font-stretch: 87.5%; font-size: 12px; }
+.stub::after { content: ""; display: block; height: 8px;
+  background: linear-gradient(135deg, var(--paper) 4px, transparent 0) 0 0 / 8px 8px repeat-x,
+              linear-gradient(-135deg, var(--paper) 4px, transparent 0) 0 0 / 8px 8px repeat-x; }
+.stub img { grid-row: span 4; width: 40px; aspect-ratio: 1440 / 2546; height: auto; object-fit: cover; display: block;
+  filter: grayscale(1) contrast(1.3); mix-blend-mode: multiply; }
+.stub b { font-size: 13px; font-stretch: 100%; }
+.stub .m { color: var(--paper-mute); }
+.spike li:nth-child(odd) .stub { transform: rotate(-.7deg); }
+.spike li:nth-child(even) .stub { transform: rotate(.6deg); }
+.spike li.cur .stub { transform: translateX(10px) rotate(-.3deg); }
+.spike li.cur .stub .s { box-shadow: inset 4px 0 0 var(--stamp); }
+
+@media (max-width: 960px) {
+  .desk { grid-template-columns: minmax(0, 1fr); gap: 30px; padding: 6px 16px 24px; }
+  .left { display: contents; }
+  .till { order: 1; }
+  .printer { order: 2; }
+  .spike { order: 3; }
+  .top { padding: 14px 16px; }
+  .foot { padding: 14px 16px 22px; }
+}
+@media (max-width: 560px) {
+  .nav .lbl { display: none; }
+  .nav a { padding: 7px; }
+  .receipt { padding: 22px 16px 16px; }
+  .slot { margin: 0 -8px; }
+  .items { font-size: 12px; }
+  .items .n { margin-right: 6px; }
+  .items .dim { display: none; }
+  .stamp { top: 70px; right: 6px; font-size: 16px; }
+  .coupon { margin: 18px -4px 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .items .cursor { animation: none; }
+  .ok { transition: none; }
+}
+
+/* ------------------------------------------------------------------ the app beyond the mockup */
+.nav a.on { background: rgba(0, 0, 0, .09); }
+.nav .lang a { display: inline-block; padding: 3px 8px; border-radius: 0; font-size: 11.5px; font-weight: 700; font-stretch: 100%;
+  text-decoration: none; }
+.nav .lang a:hover { background: none; }
+.nav .lang a.on { background: var(--counter-ink); color: var(--counter); }
+span.brand { cursor: default; }
+@media (prefers-color-scheme: dark) {
+  .nav a:hover { background: rgba(255, 255, 255, .08); }
+  .nav a.on { background: rgba(255, 255, 255, .1); }
+  .nav .lang a:hover { background: none; }
+}
+
+/* The receipt's other lines: a fetch again that failed, the engine's error, the step at work. */
+.msg.warn { color: var(--decline); font-weight: 600; }
+.log.now { color: var(--paper-ink); font-weight: 700; }
+.log.detail { margin-top: 6px; font-size: 11.5px; overflow-wrap: anywhere; }
+.r-acts.start { justify-content: flex-start; margin-top: 18px; }
+.thumbs a, .thumbs span { aspect-ratio: var(--ratio, 4 / 5); }
+.items .rm { display: inline-flex; margin-left: 2px; padding: 2px; border: 0; border-radius: 3px; background: none;
+  color: var(--paper-mute); transform: translateY(2px); cursor: pointer; }
+.items .rm:hover { color: var(--decline); background: rgba(0, 0, 0, .07); }
+.vfd .l2 .blk:only-child { margin-left: 0; }
+
+/* The spike: its heading and link, and a stub with no picture (an error, or still at work). */
+.spike .spike-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
+.spike .spike-h h2 { margin: 0; }
+.spike .more { font-size: 11.5px; font-stretch: 87.5%; color: var(--counter-mute); }
+.spike .more:hover { color: var(--counter-ink); }
+.stub .ph { grid-row: span 4; width: 40px; aspect-ratio: 4 / 5; outline: 1.5px dashed var(--paper-rule); outline-offset: -1.5px; }
+.stub:hover b { text-decoration: underline; text-underline-offset: 3px; }
+
+/* History, Settings and the sign-in form: one long receipt, torn at the bottom. */
+.desk.page-history, .desk.page-settings, .desk.gate { grid-template-columns: minmax(0, 1fr); }
+.desk.gate { justify-items: center; padding-top: 24px; }
+.sheet { padding: 26px 26px 20px; font-size: 13px; font-stretch: 87.5%; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .25)); }
+.sheet::after { content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+  background: linear-gradient(135deg, var(--paper) 5px, transparent 0) 0 0 / 10px 10px repeat-x,
+              linear-gradient(-135deg, var(--paper) 5px, transparent 0) 0 0 / 10px 10px repeat-x; }
+.sheet-head { padding-bottom: 12px; border-bottom: 1.5px dashed var(--paper-rule); }
+.sheet-head h1 { font-size: 22px; font-weight: 800; font-stretch: 112.5%; letter-spacing: .01em; }
+.sheet .empty { padding: 0; color: var(--s-mute); }
+.sheet .group h2 { font-size: 13px; font-weight: 800; font-stretch: 100%; }
+.t th, .t td { border-bottom: 1.5px dotted var(--s-line); }
+.t thead th { font-size: 11.5px; }
+.t .th img { filter: grayscale(1) contrast(1.3); mix-blend-mode: multiply; }
+.b, .inp, .chip, .note, .notice, .pick { border-radius: 3px; }
+.b { font-stretch: 100%; font-size: 13px; }
+.chip { border-width: 1.5px; font-size: 11.5px; }
+.notice { border: 1.5px dashed var(--paper-rule); }
+.drawer-panel { font-stretch: 87.5%; font-size: 13px; }
+.drawer-head h2, .dlg-h h2 { font-stretch: 100%; font-size: 15px; }
+.dlg-b { font-size: 13px; }
+.toast { font-size: 12px; font-stretch: 87.5%; border-radius: 6px; box-shadow: 0 0 0 1px #000, 0 10px 24px rgba(0, 0, 0, .3); }

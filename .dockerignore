@@ -1,0 +1,12 @@
+# The web image takes only bin/, config/, lang/, lib/ and public/; everything else stays out of
+# the build context.
+*
+!bin/
+!config/
+!lang/
+!lib/
+!public/
+!docker/
+config/config.local.php
+**/.DS_Store
+**/.htaccess
