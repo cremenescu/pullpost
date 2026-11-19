@@ -36,7 +36,7 @@ final class Auth
 
     public static function configured(): bool
     {
-        return self::hash() !== '';
+        return Demo::on() || self::hash() !== '';
     }
 
     public static function check(): bool
@@ -61,7 +61,12 @@ final class Auth
 
     public static function attempt(string $password): bool
     {
-        $ok = self::configured() && password_verify($password, self::hash());
+        if (Demo::on()) {
+            // the demo's password is written on its sign-in page; without one nobody gets in
+            $ok = Demo::password() !== '' && hash_equals(Demo::password(), $password);
+        } else {
+            $ok = self::configured() && password_verify($password, self::hash());
+        }
         self::note($ok);
         if ($ok) {
             self::signIn();
@@ -167,6 +172,9 @@ final class Auth
     /** Settings: the other browsers are signed out, this one stays in. Returns what is wrong, or null. */
     public static function change(string $current, string $password, string $again): ?string
     {
+        if (Demo::on()) {
+            return t('demo_off');
+        }
         if (!password_verify($current, self::hash())) {
             return t('pw_wrong_now');
         }

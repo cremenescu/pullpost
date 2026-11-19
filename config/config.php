@@ -29,6 +29,17 @@ $config = [
     // Behind a reverse proxy only: trust its X-Real-IP / X-Forwarded-For (login rate limit) and
     // X-Forwarded-Proto (Secure cookies).
     'trust_proxy'          => $env('PULLPOST_TRUST_PROXY', '0') === '1',
+    // A public demo (see README.md): fetching is off, the password is the one below and the sign-in
+    // page shows it, Settings keep only the look (per visitor), and every demo_reset_minutes the
+    // history goes back to the snapshot taken with bin/demo.php snapshot.
+    'demo'                 => $env('PULLPOST_DEMO', '0') === '1',
+    'demo_password'        => $env('PULLPOST_DEMO_PASSWORD', ''),
+    'demo_reset_minutes'   => (int) $env('PULLPOST_DEMO_RESET_MINUTES', '60'),
+    // Where the snapshot is: empty means demo-seed in the data folder. compose.demo.yaml mounts
+    // one read-only from next to it.
+    'demo_seed'            => $env('PULLPOST_DEMO_SEED', ''),
+    // A page about the demo, linked from its banner; {lang} becomes en or ro. Empty: no link.
+    'demo_about'           => $env('PULLPOST_DEMO_ABOUT', ''),
 ];
 $local = __DIR__ . '/config.local.php';
 if (is_file($local)) {

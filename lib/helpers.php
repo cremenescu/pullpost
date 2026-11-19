@@ -67,10 +67,16 @@ final class I18n
     private static array $strings = [];
     private static array $fallback = [];
 
-    /** The language of this request: the cookie set by the EN/RO buttons, else the browser's. */
+    /**
+     * The language of this request: the cookie set by the EN/RO buttons, else the one a trusted
+     * reverse proxy names in X-Pullpost-Lang (for an address per language), else the browser's.
+     */
     public static function init(): void
     {
         $pick = (string) ($_COOKIE[self::COOKIE] ?? '');
+        if (!isset(self::LANGS[$pick]) && cfg('trust_proxy')) {
+            $pick = strtolower(trim((string) ($_SERVER['HTTP_X_PULLPOST_LANG'] ?? '')));
+        }
         if (!isset(self::LANGS[$pick])) {
             $pick = 'en';
             foreach (explode(',', (string) ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '')) as $part) {

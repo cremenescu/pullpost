@@ -10,6 +10,15 @@ if (PHP_SAPI !== 'cli') {
 }
 require dirname(__DIR__) . '/lib/bootstrap.php';
 
+if (Demo::on()) {
+    echo Demo::password() !== ''
+        ? "pullpost: demo mode, the password is the one in PULLPOST_DEMO_PASSWORD\n"
+        : "pullpost: demo mode without PULLPOST_DEMO_PASSWORD: nobody can sign in\n";
+    if (!Demo::hasSeed()) {
+        echo "pullpost: the demo has no snapshot yet: php bin/demo.php snapshot\n";
+    }
+    exit(0);
+}
 // announced on stderr, which is the container log when the entrypoint runs it
 if (Auth::setupCode(true) === null) {
     echo "pullpost: the password is already set; to change it, run bin/set-password.php\n";

@@ -13,7 +13,7 @@ abstract class Theme
 
     public static function id(): string
     {
-        $id = (string) (Db::meta('theme') ?: cfg('theme'));
+        $id = (string) (Demo::on() ? (Demo::theme() ?? cfg('theme')) : (Db::meta('theme') ?: cfg('theme')));
         return isset(self::NAMES[$id]) ? $id : 'a';
     }
 
@@ -56,6 +56,9 @@ abstract class Theme
     /** The engine's state in one line, for the frames. */
     public static function engineLine(): string
     {
+        if (Demo::on()) {
+            return t('demo_engine');
+        }
         $h = Engine::health();
         if ($h === null) {
             return t('engine_down');

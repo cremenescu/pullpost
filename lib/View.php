@@ -24,7 +24,8 @@ final class View
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="referrer" content="no-referrer">
-<title><?= e($title) ?></title>
+<?php if (Demo::on()): ?><meta name="robots" content="noindex, nofollow">
+<?php endif; ?><title><?= e($title) ?></title>
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= e(self::asset('fonts/fonts.css')) ?>">
 <link rel="stylesheet" href="<?= e(self::asset('base.css')) ?>">
@@ -33,6 +34,23 @@ final class View
 <body<?= $bodyClass !== '' ? ' class="' . e($bodyClass) . '"' : '' ?>>
 <?php
         self::icons();
+        echo self::demoBand();
+    }
+
+    /** The band at the top of every page of the demo: what it is, the source and the project page. */
+    public static function demoBand(): string
+    {
+        if (!Demo::on()) {
+            return '';
+        }
+        $min = max(5, (int) cfg('demo_reset_minutes'));
+        $when = $min === 60 ? t('demo_hourly') : tn('demo_every', $min);
+        $h = '<div class="demo-band" role="note"><span>' . e(t('demo_band', ['v' => APP_VERSION, 'when' => $when])) . '</span>'
+            . '<a href="' . e(Demo::SOURCE) . '" rel="noopener">' . e(t('demo_source')) . '</a>';
+        if (Demo::about() !== '') {
+            $h .= '<a href="' . e(Demo::about()) . '" rel="noopener">' . e(t('demo_about')) . '</a>';
+        }
+        return $h . "</div>\n";
     }
 
     public static function icons(): void

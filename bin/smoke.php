@@ -309,6 +309,21 @@ $GLOBALS['config']['trust_proxy'] = true;
 check('with it, the client is the last hop the proxy saw', client_ip() === '198.51.100.7');
 $GLOBALS['config']['trust_proxy'] = false;
 unset($_SERVER['HTTP_X_FORWARDED_FOR']);
+$_COOKIE = [];
+$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en-US,en;q=0.9';
+$_SERVER['HTTP_X_PULLPOST_LANG'] = 'ro';
+I18n::init();
+check('without PULLPOST_TRUST_PROXY the proxy cannot pick the language', I18n::lang() === 'en');
+$GLOBALS['config']['trust_proxy'] = true;
+I18n::init();
+$byProxy = I18n::lang();
+$_COOKIE[I18n::COOKIE] = 'en';
+I18n::init();
+check('with it, X-Pullpost-Lang picks it until the EN/RO buttons set the cookie', $byProxy === 'ro' && I18n::lang() === 'en');
+$GLOBALS['config']['trust_proxy'] = false;
+$_COOKIE = [];
+unset($_SERVER['HTTP_X_PULLPOST_LANG']);
+I18n::use('en');
 
 // ------------------------------------------------------------ actions
 check('an unknown action is refused', refused(fn () => Actions::handle('nope', [])));
@@ -343,6 +358,69 @@ foreach (['a', 'b'] as $th) {
     }
 }
 I18n::use('en');
+
+// ------------------------------------------------------------ the demo (PULLPOST_DEMO=1)
+const DEMO_POST = 'CxAmPle0004';
+Db::run("INSERT INTO posts (code, kind, url, state, created_at, requested_at) VALUES (?, 'p', 'x', 'queued', 3, 3)", [DEMO_POST]);
+engine_post(DEMO_POST, 'p', ['image', 'image', 'image']);
+engine_job(DEMO_POST, ['state' => 'done']);
+Posts::sync(DEMO_POST);
+Db::meta('theme', 'a');
+$GLOBALS['config']['demo'] = true;
+$GLOBALS['config']['demo_password'] = 'demo-pass-1';
+$_SESSION = [];
+check('demo: no setup code is asked for', Auth::configured() && Auth::setupCode() === null);
+check('demo: only the demo password signs in', !Auth::attempt('wrong-pass') && Auth::attempt('demo-pass-1') && Auth::check());
+check('demo: fetching, the Instagram session and the password are refused',
+    refused(fn () => Actions::handle('start', ['url' => 'https://www.instagram.com/p/' . DEMO_POST . '/']))
+    && refused(fn () => Actions::handle('refetch', ['code' => DEMO_POST]))
+    && refused(fn () => Actions::handle('session_save', ['sessionid' => 'abcdefgh']))
+    && refused(fn () => Actions::handle('password', ['current' => 'demo-pass-1', 'password' => 'another-1', 'again' => 'another-1'])));
+check('demo: the engine is never asked', Engine::health() === null && Theme::engineLine() === t('demo_engine'));
+Actions::handle('theme', ['theme' => 'b']);
+Theme::force(null);
+check('demo: the theme chosen is the visitor\'s, the app\'s stays', Theme::id() === 'b' && Db::meta('theme') === 'a');
+unset($_COOKIE[Demo::THEME_COOKIE]);
+check('demo: a new visitor gets the default theme', Theme::id() === (string) cfg('theme'));
+
+$done = (int) Db::value("SELECT count(*) FROM posts WHERE state = 'done'");
+check('demo: the snapshot takes every finished post', Demo::snapshot() === $done && Demo::hasSeed() && is_dir(Demo::seedDir() . '/posts/' . DEMO_POST));
+$seedDir = Demo::seedDir() . '/posts/' . DEMO_POST;
+$seedZip = $seedDir . '/' . Posts::get(DEMO_POST)['zip_name'];
+Actions::handle('delete_file', ['code' => DEMO_POST, 'n' => '2']);
+Actions::handle('delete', ['code' => REEL]);
+check('demo: deleting works as in the app', count(Posts::files(DEMO_POST)) === 2 && Posts::get(REEL) === null);
+$slot = (string) intdiv(time(), 3600);
+file_put_contents(data_path('demo-reset'), $slot);
+Demo::maybeReset();
+check('demo: nothing is reset before the hour is over', Posts::get(REEL) === null);
+file_put_contents(data_path('demo-reset'), '0');
+Demo::maybeReset();
+$files = Posts::files(DEMO_POST);
+check('demo: the reset brings back the rows and the files, and only the finished posts',
+    Posts::get(REEL) !== null && count($files) === 3 && is_file(Posts::dir(DEMO_POST) . '/' . $files[1]['name'])
+    && is_file((string) Posts::filePath(REEL, 'f1')) && count(Posts::all()) === $done && Posts::get(PRIVATE_POST) === null);
+check('demo: the reset is marked for this hour', trim((string) file_get_contents(data_path('demo-reset'))) === $slot);
+Actions::handle('delete_file', ['code' => DEMO_POST, 'n' => '1']);
+check('demo: deleting after a reset leaves the snapshot whole',
+    is_file($seedDir . '/' . $files[0]['name']) && file_get_contents($seedZip) === 'PK' && count(glob($seedDir . '/*.jpg')) === 3);
+Theme::force('a');
+ob_start();
+View::head('x', 'p-settings');
+require APP_ROOT . '/lib/pages/settings.php';
+$html = ob_get_clean();
+check('demo: Settings keep the look and say when it resets, without the session or the password',
+    str_contains($html, 'id="d-theme"') && !str_contains($html, 'id="d-ig"') && !str_contains($html, 'id="d-pass"')
+    && str_contains($html, e(t('demo_next', ['t' => date('H:i', Demo::nextReset())]))));
+check('demo: the pages carry the band, the source link and noindex',
+    str_contains($html, 'class="demo-band"') && str_contains($html, e(Demo::SOURCE)) && str_contains($html, '<meta name="robots" content="noindex, nofollow">'));
+check('demo: the next reset is on the hour', Demo::nextReset(7205) === 10800);
+$GLOBALS['config']['demo'] = false;
+$_SESSION = [];
+ob_start();
+View::head('x');
+$html = ob_get_clean();
+check('without PULLPOST_DEMO there is no band and no noindex', !str_contains($html, 'demo-band') && !str_contains($html, 'noindex'));
 
 // clean up
 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);

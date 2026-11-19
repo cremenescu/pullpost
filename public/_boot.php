@@ -8,6 +8,12 @@ header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: no-referrer');
 
+// The demo goes back to its snapshot once per period, and stays out of search engines.
+if (Demo::on()) {
+    Demo::maybeReset();
+    header('X-Robots-Tag: noindex, nofollow');
+}
+
 Auth::startSession();
 
 // The EN / RO buttons: remember the choice and come back to the same page without ?lang=.

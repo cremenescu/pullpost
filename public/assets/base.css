@@ -180,3 +180,9 @@ label.f small { font-weight: 450; color: var(--s-mute); font-size: 12px; }
   .drawer-panel, .toast { animation: none; }
   .toast.out { transition: none; }
 }
+
+/* ------------------------------------------------------------------ the demo's band (PULLPOST_DEMO=1) */
+.demo-band { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 4px 14px;
+  padding: 7px 16px; background: var(--s-ink); color: var(--s-bg); font-family: var(--s-font);
+  font-size: 12.5px; line-height: 1.45; text-align: center; }
+.demo-band a { color: inherit; font-weight: 650; text-underline-offset: 2px; }

@@ -61,7 +61,7 @@ $theme->gateStart();
   <?php else: ?>
     <form method="post" class="gate-form" autocomplete="on">
       <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-      <label class="f"><span><?= e(t('password')) ?></span><input class="inp" type="password" name="password" autocomplete="current-password" required autofocus></label>
+      <label class="f"><span><?= e(t('password')) ?></span><input class="inp" type="password" name="password" autocomplete="current-password" required autofocus><?php if (Demo::on()): ?><small><?= e(Demo::password() !== '' ? t('demo_pw', ['pw' => Demo::password()]) : t('demo_no_pw')) ?></small><?php endif; ?></label>
       <button class="b" type="submit"><?= e(t('signin')) ?></button>
     </form>
   <?php endif; ?>

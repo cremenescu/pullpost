@@ -62,5 +62,6 @@ require __DIR__ . '/Card.php';
 require __DIR__ . '/Theme.php';
 require __DIR__ . '/View.php';
 require __DIR__ . '/Actions.php';
+require __DIR__ . '/Demo.php';
 
 I18n::init();

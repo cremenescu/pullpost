@@ -231,4 +231,18 @@ return [
     'del_session'   => 'Delete the session',
     'current_pw'    => 'Current password',
     'change_pw'     => 'Change the password',
+
+    // the demo (PULLPOST_DEMO=1)
+    'demo_band'     => 'This is a demo of pullpost {v}. Fetching from Instagram is off, and what you change here is undone {when}.',
+    'demo_hourly'   => 'every hour',
+    'demo_every'    => ['one' => 'every minute', 'other' => 'every {n} minutes'],
+    'demo_source'   => 'Source on GitHub',
+    'demo_about'    => 'About the project',
+    'demo_pw'       => 'The demo’s password: {pw}',
+    'demo_no_pw'    => 'This demo has no password set (PULLPOST_DEMO_PASSWORD), so nobody can sign in.',
+    'demo_no_fetch' => 'Fetching from Instagram is off in the demo. To save posts, install pullpost on your own server: the source is on GitHub.',
+    'demo_off'      => 'Not available in the demo.',
+    'demo_engine'   => 'Demo: fetching is off',
+    'demo_row'      => 'Demo',
+    'demo_next'     => 'back to the start at {t}',
 ];

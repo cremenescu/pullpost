@@ -77,6 +77,11 @@ and `PULLPOST_TRUST_PROXY=1`, and have the proxy send `X-Forwarded-Proto` and `X
 `X-Forwarded-For`). The session cookie is then marked `Secure`, and the limit on wrong passwords
 counts the visitor's address instead of the proxy's.
 
+The app's links are relative, so it also works under a path (`/pullpost/`); have the proxy rewrite
+the path of the cookies to it. With one path per language, the proxy can name the language of the
+path in an `X-Pullpost-Lang` header (`en` or `ro`, read only with `PULLPOST_TRUST_PROXY=1`): the
+first page a visitor opens is in that language, and the EN / RO buttons change it from there.
+
 ### Everyday commands
 
 ```sh
@@ -98,6 +103,44 @@ The data volume is `pullpost_data`. To back it up:
 ```sh
 docker run --rm -v pullpost_data:/data -v "$PWD":/backup busybox tar czf /backup/pullpost-data.tgz -C /data .
 ```
+
+### A public demo
+
+`compose.demo.yaml` runs pullpost as a demo anyone can try. It is the web container alone, without
+the engine, so the demo never talks to Instagram. Visitors sign in with a password that the
+sign-in page shows, open the posts of a history you prepared, download their files and ZIPs,
+delete, and change the look and the language. Settings keep only the look, which is each
+visitor's own (a cookie). Every hour the history goes back to its snapshot. Every page has a band
+saying it is a demo, with a link to this repository, and asks search engines not to index it.
+
+1. In an ordinary install, fetch the posts the demo should show (posts you have the right to
+   publish) and take the snapshot:
+
+   ```sh
+   docker compose exec -u www-data web php bin/demo.php snapshot
+   ```
+
+2. In a clone of its own for the demo, put the snapshot next to `compose.demo.yaml`, as a folder
+   named `demo-seed` that the container's `www-data` user can read (from the install of step 1:
+   `docker compose cp web:/data/demo-seed <the demo's clone>/demo-seed`).
+
+3. Choose the demo's password in a `.env` file next to `compose.demo.yaml` and start it:
+
+   ```sh
+   docker compose -f compose.demo.yaml up -d --build
+   ```
+
+| Variable | Default | What it does |
+|---|---|---|
+| `PULLPOST_DEMO_PASSWORD` | none, required | The password; the sign-in page shows it. |
+| `PULLPOST_DEMO_PORT` | `127.0.0.1:8081` | The demo's port, and the address it listens on. |
+| `PULLPOST_DEMO_RESET_MINUTES` | `60` | How often the history goes back to the snapshot. |
+| `PULLPOST_DEMO_ABOUT` | empty | A page about the demo, linked from the band; `{lang}` becomes `en` or `ro`. |
+| `PULLPOST_TRUST_PROXY` | `0` | `1` behind a reverse proxy, as above. |
+
+`docker compose -f compose.demo.yaml exec -u www-data web php bin/demo.php reset` puts the snapshot
+back at once, and `status` instead of `reset` tells what the snapshot holds and when the next reset
+is. The demo mode itself is the `PULLPOST_DEMO=1` setting of the web container.
 
 ## Your Instagram account (optional)
 

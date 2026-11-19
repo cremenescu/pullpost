@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# A public demo of pullpost (see "A public demo" in README.md): the web container alone, in demo
+# mode, starting from the snapshot in ./demo-seed. There is no engine: the demo never talks to
+# Instagram.
+#   docker compose -f compose.demo.yaml up -d --build
+name: pullpost-demo
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PULLPOST_DEMO_PORT:-127.0.0.1:8081}:80"
+    environment:
+      TZ: ${TZ:-UTC}
+      PULLPOST_DEMO: "1"
+      PULLPOST_DEMO_PASSWORD: ${PULLPOST_DEMO_PASSWORD:?set PULLPOST_DEMO_PASSWORD, the password the sign-in page shows}
+      PULLPOST_DEMO_RESET_MINUTES: ${PULLPOST_DEMO_RESET_MINUTES:-60}
+      PULLPOST_DEMO_ABOUT: ${PULLPOST_DEMO_ABOUT:-}
+      PULLPOST_DEMO_SEED: /seed
+      PULLPOST_TRUST_PROXY: ${PULLPOST_TRUST_PROXY:-0}
+    volumes:
+      - data:/data
+      - ./demo-seed:/seed:ro
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+
+volumes:
+  data:

@@ -9,6 +9,14 @@ final class Actions
     public static function handle(string $act, array $p): array
     {
         $code = (string) ($p['code'] ?? '');
+        if (Demo::on()) {
+            if (in_array($act, ['start', 'refetch'], true)) {
+                throw new UserError(t('demo_no_fetch'));
+            }
+            if (in_array($act, ['session_save', 'session_clear', 'password'], true)) {
+                throw new UserError(t('demo_off'));
+            }
+        }
         switch ($act) {
             case 'start':
             case 'refetch':
@@ -41,7 +49,8 @@ final class Actions
                 if (!isset(Theme::NAMES[$theme])) {
                     throw new UserError(t('bad_theme'));
                 }
-                Db::meta('theme', $theme);
+                // in the demo each visitor keeps their own
+                Demo::on() ? Demo::rememberTheme($theme) : Db::meta('theme', $theme);
                 return ['ok' => true, 'msg' => t('msg_theme')];
         }
         throw new UserError(t('unknown_action'));

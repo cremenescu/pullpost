@@ -13,12 +13,18 @@ final class Engine
         if ($cache !== false) {
             return $cache;
         }
+        if (Demo::on()) {
+            return $cache = null;
+        }
         $r = self::http('GET', '/health', null, 2);
         return $cache = ($r !== null && ($r['ok'] ?? false) ? $r : null);
     }
 
     public static function fetch(string $code, string $kind): void
     {
+        if (Demo::on()) {
+            throw new UserError(t('demo_no_fetch'));
+        }
         $r = self::http('POST', '/fetch', ['code' => $code, 'kind' => $kind], 5);
         if ($r === null || empty($r['queued'])) {
             throw new UserError(t('engine_off'));

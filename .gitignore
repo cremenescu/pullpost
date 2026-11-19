@@ -8,11 +8,14 @@
 *.heic
 *.mp4
 *.mov
+design/sample/
 
 # The app's data (database, downloaded posts, the Instagram session) and this machine's config
 data/
 config/config.local.php
 .env
+# The demo's snapshot (compose.demo.yaml): posts, so not for the repo either
+demo-seed/
 
 # Python bytecode
 __pycache__/

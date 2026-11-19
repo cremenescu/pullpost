@@ -78,6 +78,12 @@ HTTPS, nu pentru un port deschis spre internet. În spatele unui proxy pui
 `X-Forwarded-Proto` și `X-Real-IP` (sau `X-Forwarded-For`). Atunci cookie-ul de sesiune e marcat
 `Secure`, iar limita de parole greșite numără adresa vizitatorului, nu pe a proxy-ului.
 
+Legăturile din aplicație sunt relative, așa că merge și sub o cale (`/pullpost/`); proxy-ul
+rescrie atunci calea cookie-urilor spre ea. Cu câte o cale pe limbă, proxy-ul poate spune limba
+căii în header-ul `X-Pullpost-Lang` (`en` sau `ro`, citit doar cu `PULLPOST_TRUST_PROXY=1`):
+prima pagină pe care o deschide un vizitator e în limba aceea, iar butoanele EN / RO o schimbă de
+acolo.
+
 ### Comenzi de zi cu zi
 
 ```sh
@@ -99,6 +105,45 @@ Volumul de date e `pullpost_data`. Ca să-i faci backup:
 ```sh
 docker run --rm -v pullpost_data:/data -v "$PWD":/backup busybox tar czf /backup/pullpost-data.tgz -C /data .
 ```
+
+### Un demo public
+
+`compose.demo.yaml` pornește pullpost ca demo pe care îl poate încerca oricine. E doar containerul
+web, fără motor, așa că demo-ul nu vorbește niciodată cu Instagram. Vizitatorii intră cu o parolă
+pe care o arată pagina de login, deschid postările dintr-un istoric pregătit de tine, descarcă
+fișierele și ZIP-urile, șterg și schimbă înfățișarea și limba. Setările păstrează doar
+înfățișarea, care e a fiecărui vizitator (un cookie). La fiecare oră istoricul revine la
+snapshot. Fiecare pagină are o bandă care spune că e un demo, cu link spre acest repository, și
+cere motoarelor de căutare să n-o indexeze.
+
+1. Într-o instalare obișnuită descarci postările pe care să le arate demo-ul (postări pe care ai
+   dreptul să le publici) și faci snapshot-ul:
+
+   ```sh
+   docker compose exec -u www-data web php bin/demo.php snapshot
+   ```
+
+2. Într-o clonă separată pentru demo pui snapshot-ul lângă `compose.demo.yaml`, ca folder numit
+   `demo-seed`, pe care userul `www-data` din container îl poate citi (din instalarea de la pasul 1:
+   `docker compose cp web:/data/demo-seed <clona demo-ului>/demo-seed`).
+
+3. Alegi parola demo-ului într-un fișier `.env` lângă `compose.demo.yaml` și îl pornești:
+
+   ```sh
+   docker compose -f compose.demo.yaml up -d --build
+   ```
+
+| Variabilă | Implicit | Ce face |
+|---|---|---|
+| `PULLPOST_DEMO_PASSWORD` | niciuna, obligatorie | Parola; pagina de login o arată. |
+| `PULLPOST_DEMO_PORT` | `127.0.0.1:8081` | Portul demo-ului și adresa pe care ascultă. |
+| `PULLPOST_DEMO_RESET_MINUTES` | `60` | Din cât în cât revine istoricul la snapshot. |
+| `PULLPOST_DEMO_ABOUT` | gol | O pagină despre demo, cu link din bandă; `{lang}` devine `en` sau `ro`. |
+| `PULLPOST_TRUST_PROXY` | `0` | `1` în spatele unui reverse proxy, ca mai sus. |
+
+`docker compose -f compose.demo.yaml exec -u www-data web php bin/demo.php reset` repune
+snapshot-ul pe loc, iar `status` în loc de `reset` spune ce conține snapshot-ul și când e
+următoarea revenire. Modul demo în sine e setarea `PULLPOST_DEMO=1` a containerului web.
 
 ## Contul tău de Instagram (opțional)
 

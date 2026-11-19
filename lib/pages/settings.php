@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 $s = Posts::session();
 $hl = Engine::health();
+// the demo has no engine, no Instagram session and no password to change: those parts are left out
 $tot = Posts::totals();
 $pwAt = (int) Db::meta('password_at');
 $themeId = Theme::id();
@@ -25,6 +26,7 @@ $themeId = Theme::id();
     </table>
   </section>
 
+  <?php if (!Demo::on()): ?>
   <section class="group">
     <h2><?= e(t('sec_instagram')) ?></h2>
     <table class="t kv">
@@ -35,13 +37,18 @@ $themeId = Theme::id();
       </tbody>
     </table>
   </section>
+  <?php endif; ?>
 
   <section class="group">
     <h2><?= e(t('sec_app')) ?></h2>
     <table class="t kv">
       <thead class="vh"><tr><th><?= e(t('c_what')) ?></th><th><?= e(t('c_value')) ?></th></tr></thead>
       <tbody>
+        <?php if (Demo::on()): ?>
+        <tr><th scope="row"><?= e(t('demo_row')) ?></th><td><?= e(t('demo_next', ['t' => date('H:i', Demo::nextReset())])) ?></td></tr>
+        <?php else: ?>
         <tr class="click" data-drawer="d-pass" tabindex="0"><th scope="row"><?= e(t('page_password')) ?></th><td class="muted"><?= $pwAt ? e(t('pw_chosen', ['d' => fmt_day($pwAt)])) : '' ?></td></tr>
+        <?php endif; ?>
         <tr><th scope="row"><?= e(t('storage')) ?></th><td><?= $tot['count'] > 0 ? e(t('storage_v', ['posts' => tn('n_posts', $tot['count']), 'files' => tn('n_files', $tot['files']), 'size' => size_text($tot['bytes'])])) : '<span class="muted">' . e(t('nothing_yet')) . '</span>' ?></td></tr>
         <tr><th scope="row"><?= e(t('version')) ?></th><td class="mono">pullpost <?= e(APP_VERSION) ?></td></tr>
       </tbody>
@@ -66,6 +73,7 @@ $themeId = Theme::id();
     </form>
 <?php View::drawerEnd(); ?>
 
+<?php if (!Demo::on()): ?>
 <?php View::drawerStart('d-ig', t('your_account')); ?>
     <form class="drawer-body" data-ajax data-act="session_save" autocomplete="off">
       <p><?= e(t('d_ig_1')) ?></p>
@@ -89,3 +97,4 @@ $themeId = Theme::id();
       <div class="drawer-foot"><button type="submit" class="b sm"><?= e(t('change_pw')) ?></button></div>
     </form>
 <?php View::drawerEnd(); ?>
+<?php endif; ?>

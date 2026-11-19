@@ -220,4 +220,18 @@ return [
     'del_session'   => 'Șterge sesiunea',
     'current_pw'    => 'Parola de acum',
     'change_pw'     => 'Schimbă parola',
+
+    // demo-ul (PULLPOST_DEMO=1)
+    'demo_band'     => 'Acesta e un demo pullpost {v}. Descărcarea de pe Instagram e oprită, iar ce schimbi aici se anulează {when}.',
+    'demo_hourly'   => 'la fiecare oră',
+    'demo_every'    => ['one' => 'la fiecare minut', 'few' => 'la fiecare {n} minute', 'other' => 'la fiecare {n} de minute'],
+    'demo_source'   => 'Codul pe GitHub',
+    'demo_about'    => 'Despre proiect',
+    'demo_pw'       => 'Parola demo-ului: {pw}',
+    'demo_no_pw'    => 'Demo-ul n-are parolă (PULLPOST_DEMO_PASSWORD), așa că nu poate intra nimeni.',
+    'demo_no_fetch' => 'În demo, descărcarea de pe Instagram e oprită. Ca să salvezi postări, instalează pullpost pe serverul tău: codul e pe GitHub.',
+    'demo_off'      => 'Nu e disponibil în demo.',
+    'demo_engine'   => 'Demo: descărcarea e oprită',
+    'demo_row'      => 'Demo',
+    'demo_next'     => 'revine la început la {t}',
 ];
