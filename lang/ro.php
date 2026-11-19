@@ -20,6 +20,9 @@ return [
     'engine_busy'  => 'Chromium descarcă {code}',
     'engine_down'  => 'Motorul nu răspunde',
     'close'        => 'Închide',
+    'viewer'       => 'Poza sau video-ul postării',
+    'prev'         => 'Anterioara',
+    'next'         => 'Următoarea',
     'cancel'       => 'Renunță',
     'save'         => 'Salvează',
 

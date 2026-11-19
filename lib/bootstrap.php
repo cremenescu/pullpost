@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Single entry point for every request and CLI script: config, time zone, error log, language,
 // classes. APP_ROOT is the folder holding lib/, config/, lang/ and bin/.
 define('APP_ROOT', dirname(__DIR__));
-const APP_VERSION = '0.1.0';
+const APP_VERSION = '0.1.1';
 
 $GLOBALS['config'] = require APP_ROOT . '/config/config.php';
 

@@ -263,6 +263,10 @@ check('a post that is downloading cannot be deleted', refused(fn () => Posts::de
 foreach (['a', 'b'] as $th) {
     Theme::force($th);
     check("theme $th: every file of a carousel has its own trash", substr_count(Card::render(CAROUSEL)['html'], 'data-file=') === 10);
+    $html = Card::render(CAROUSEL)['html'];
+    check("theme $th: every file opens in the viewer, not in a new window", substr_count($html, 'data-viewgroup') === 1
+        && substr_count($html, ' data-view data-type="image" data-name="') === 10 && substr_count($html, 'data-dl="file.php?c=') === 10
+        && !preg_match('/<a [^>]*data-view[^>]*target=/', $html));
 }
 $r = Actions::handle('delete_file', ['code' => CAROUSEL, 'n' => '3']);
 $p = Posts::get(CAROUSEL);
@@ -347,6 +351,8 @@ foreach (['a', 'b'] as $th) {
         check("$th/$lang: History has its rows, filters and a trash per row", substr_count($html, 'data-href="?c=') === 3 && str_contains($html, 'id="hist-n"')
             && substr_count($html, 'data-href="?c=') === substr_count($html, 'data-title="' . e(t('del_post_t')) . '"'));
         check("$th/$lang: the page ends with its data and script", str_contains($html, 'id="pullpost-data"') && str_contains($html, 'assets/app.js'));
+        check("$th/$lang: the viewer is on the page, with its arrows", str_contains($html, '<dialog class="viewer" id="viewer" aria-label="' . e(t('viewer')) . '"')
+            && str_contains($html, 'id="viewer-prev"') && str_contains($html, 'id="viewer-next"'));
         ob_start();
         require APP_ROOT . '/lib/pages/settings.php';
         $html = ob_get_clean();
@@ -358,6 +364,10 @@ foreach (['a', 'b'] as $th) {
     }
 }
 I18n::use('en');
+ob_start();
+View::icons();
+$html = ob_get_clean();
+check("the icons have the viewer's arrows", str_contains($html, 'id="i-prev"') && str_contains($html, 'id="i-next"'));
 
 // ------------------------------------------------------------ the demo (PULLPOST_DEMO=1)
 const DEMO_POST = 'CxAmPle0004';

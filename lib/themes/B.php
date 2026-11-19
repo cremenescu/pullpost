@@ -178,9 +178,9 @@ final class ThemeB extends Theme
             $h .= '<div class="msg warn" role="alert">' . e($m['refetch_error']) . '</div><hr class="rule">';
         }
 
-        $h .= '<div class="thumbs' . ($one !== null ? ' one' : '') . '" style="--ratio:' . e($ratio) . '">';
+        $h .= '<div class="thumbs' . ($one !== null ? ' one' : '') . '" style="--ratio:' . e($ratio) . '" data-viewgroup>';
         foreach ($m['files'] as $f) {
-            $h .= '<a href="' . e($f['view']) . '" target="_blank" rel="noopener" title="' . e(t('open_name', ['name' => $f['name']])) . '">'
+            $h .= '<a href="' . e($f['view']) . '"' . Card::viewAttrs($f) . ' title="' . e(t('open_name', ['name' => $f['name']])) . '">'
                 . '<img loading="lazy" src="' . e($f['small']) . '" alt="' . e(ucfirst($f['label'])) . '">' . ($f['type'] === 'video' ? icon('play') : '') . '</a>';
         }
         $h .= '</div><ol class="items">';

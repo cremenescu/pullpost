@@ -67,6 +67,8 @@ final class View
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></symbol>
   <symbol id="i-redo" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H4"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
@@ -120,6 +122,7 @@ final class View
                 'done' => t('done_toast'),
                 'bad_answer' => t('bad_answer'),
                 'of' => t('k_of'),
+                'dl_name' => t('dl_name'),
             ],
         ];
         ?>
@@ -127,6 +130,12 @@ final class View
   <div class="dlg-h"><h2 id="deldlg-t"></h2><button type="button" class="b ghost sm" data-dclose aria-label="<?= e(t('close')) ?>"><?= icon('x') ?></button></div>
   <div class="dlg-b"><p id="deldlg-p"></p></div>
   <div class="dlg-a"><button type="button" class="b danger" id="deldlg-go"><?= icon('trash') ?><?= e(t('del')) ?></button><button type="button" class="b sec" data-dclose><?= e(t('cancel')) ?></button></div>
+</dialog>
+<dialog class="viewer" id="viewer" aria-label="<?= e(t('viewer')) ?>">
+  <div class="v-bar"><span class="v-n" id="viewer-n"></span><span class="v-name" id="viewer-name"></span><a class="v-btn" id="viewer-dl" href="#" download aria-label="" title=""><?= icon('down') ?></a><button type="button" class="v-btn" data-dclose aria-label="<?= e(t('close')) ?>" title="<?= e(t('close')) ?>"><?= icon('x') ?></button></div>
+  <div class="v-stage" id="viewer-stage"><div class="v-fit" id="viewer-fit"></div></div>
+  <button type="button" class="v-nav prev" id="viewer-prev" aria-label="<?= e(t('prev')) ?>" title="<?= e(t('prev')) ?>"><?= icon('prev') ?></button>
+  <button type="button" class="v-nav next" id="viewer-next" aria-label="<?= e(t('next')) ?>" title="<?= e(t('next')) ?>"><?= icon('next') ?></button>
 </dialog>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script type="application/json" id="pullpost-data"><?= json_encode($js, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>

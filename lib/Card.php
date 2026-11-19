@@ -61,6 +61,12 @@ final class Card
         return 'file.php?c=' . rawurlencode($code) . '&f=' . rawurlencode($which) . ($inline ? '&v=1' : '');
     }
 
+    /** What app.js needs to show a file of the post in the viewer (the link keeps its href). */
+    public static function viewAttrs(array $f): string
+    {
+        return ' data-view data-type="' . e($f['type']) . '" data-name="' . e($f['name']) . '" data-dl="' . e($f['href']) . '"';
+    }
+
     public static function postHref(string $code): string
     {
         return '?c=' . rawurlencode($code);

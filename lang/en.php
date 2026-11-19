@@ -21,6 +21,9 @@ return [
     'engine_busy'  => 'Chromium is fetching {code}',
     'engine_down'  => 'The engine does not answer',
     'close'        => 'Close',
+    'viewer'       => 'Photo or video of the post',
+    'prev'         => 'Previous',
+    'next'         => 'Next',
     'cancel'       => 'Cancel',
     'save'         => 'Save',
 

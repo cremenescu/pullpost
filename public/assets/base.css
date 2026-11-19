@@ -159,6 +159,34 @@ label.f small { font-weight: 450; color: var(--s-mute); font-size: 12px; }
 .dlg-b p { margin: 0; }
 .dlg-a { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 18px 18px; }
 
+/* ------------------------------------------------------------------ the viewer: a photo or video of the post
+   Dark in both themes, so the photo is what you see; the type is the theme's. */
+.viewer { width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: rgba(12, 12, 12, .95); color: #f1f1f1; font-family: var(--s-font); overflow: hidden; }
+.viewer[open] { display: flex; flex-direction: column; }
+.viewer::backdrop { background: rgba(0, 0, 0, .6); }
+.v-bar { display: flex; align-items: center; gap: 10px; flex: none; padding: 10px 12px 10px 18px; font-size: 13px; }
+.v-n { flex: none; font-family: var(--s-data); font-variant-numeric: tabular-nums; opacity: .7; }
+.v-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--s-data); }
+.v-btn, .v-nav { display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; padding: 0; border: 0;
+  border-radius: 50%; background: rgba(255, 255, 255, .1); color: inherit; cursor: pointer; text-decoration: none; }
+.v-btn:hover, .v-nav:hover { background: rgba(255, 255, 255, .2); }
+.v-btn .i { width: 19px; height: 19px; }
+.v-stage { position: relative; flex: 1; min-height: 0; }
+.v-fit { position: absolute; inset: 0 72px 22px; display: flex; align-items: center; justify-content: center; }
+.v-fit img, .v-fit video { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto;
+  object-fit: contain; background: #000; }
+.v-nav { position: absolute; top: 50%; width: 48px; height: 48px; margin-top: -24px; }
+.v-nav .i { width: 24px; height: 24px; }
+.v-nav.prev { left: 12px; }
+.v-nav.next { right: 12px; }
+@media (max-width: 720px) {
+  .v-fit { inset: 0 0 74px; }
+  .v-nav { top: auto; bottom: 14px; margin-top: 0; }
+  .v-nav.prev { left: calc(50% - 58px); }
+  .v-nav.next { right: calc(50% - 58px); }
+}
+
 /* ------------------------------------------------------------------ toasts */
 .toasts { position: fixed; right: 16px; bottom: 16px; z-index: 300; display: grid; gap: 8px; width: min(380px, calc(100% - 32px)); }
 .toast { display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px 11px 14px; border-radius: 6px;

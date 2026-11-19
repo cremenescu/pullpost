@@ -188,6 +188,84 @@
     });
   }
 
+  /* ------------------------------------------------------------ the viewer */
+  // A photo or video of the post opens in a modal over the page, with the post's other files a
+  // click, an arrow key or a swipe away. The links keep their href: a click with a modifier key, or
+  // the middle button, still opens the file in a tab of its own.
+  var viewer = $('#viewer');
+  var vList = [], vAt = 0;
+  function viewShow(i) {
+    vAt = (i + vList.length) % vList.length;
+    var a = vList[vAt];
+    var fit = $('#viewer-fit');
+    var thumb = $('img', a);
+    var media;
+    fit.textContent = '';
+    if (a.getAttribute('data-type') === 'video') {
+      media = document.createElement('video');
+      media.controls = true;
+      media.autoplay = true;
+      media.playsInline = true;
+      if (thumb) media.poster = thumb.getAttribute('src');
+    } else {
+      media = document.createElement('img');
+      media.alt = thumb ? thumb.alt : '';
+      media.decoding = 'async';
+    }
+    media.src = a.getAttribute('href');
+    fit.appendChild(media);
+    var name = a.getAttribute('data-name') || '';
+    $('#viewer-n').textContent = vList.length > 1 ? (vAt + 1) + ' / ' + vList.length : '';
+    $('#viewer-name').textContent = name;
+    var dl = $('#viewer-dl');
+    dl.href = a.getAttribute('data-dl');
+    dl.setAttribute('aria-label', fill(str.dl_name || '{name}', { name: name }));
+    dl.title = dl.getAttribute('aria-label');
+    $('#viewer-prev').hidden = $('#viewer-next').hidden = vList.length < 2;
+    // the next photo is on its way while this one is looked at
+    var next = vList[(vAt + 1) % vList.length];
+    if (vList.length > 1 && next.getAttribute('data-type') !== 'video') new Image().src = next.getAttribute('href');
+  }
+  function viewOpen(a) {
+    vList = $$('a[data-view]', a.closest('[data-viewgroup]') || a.parentNode);
+    viewShow(Math.max(0, vList.indexOf(a)));
+    if (!viewer.open) viewer.showModal();
+  }
+  // Closing stops a video and lets go of the file. Done on every way out, not only on the close
+  // event, which a browser may hold back while the tab is in the background.
+  function viewClear() {
+    $('#viewer-fit').textContent = '';
+    vList = [];
+  }
+  if (viewer) {
+    $('#viewer-prev').addEventListener('click', function () { viewShow(vAt - 1); });
+    $('#viewer-next').addEventListener('click', function () { viewShow(vAt + 1); });
+    // a click on the dark around the photo closes it; the X closes it through data-dclose
+    viewer.addEventListener('click', function (e) {
+      if (e.target === viewer || e.target.id === 'viewer-stage' || e.target.id === 'viewer-fit') {
+        viewer.close();
+        viewClear();
+      } else if (e.target.closest('[data-dclose]')) {
+        viewClear();
+      }
+    });
+    viewer.addEventListener('cancel', viewClear);   // Escape
+    viewer.addEventListener('close', viewClear);
+    viewer.addEventListener('keydown', function (e) {
+      if (vList.length < 2 || e.target.tagName === 'VIDEO') return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); viewShow(vAt - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); viewShow(vAt + 1); }
+    });
+    var touchX = null;
+    viewer.addEventListener('touchstart', function (e) { touchX = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+    viewer.addEventListener('touchend', function (e) {
+      if (touchX === null || vList.length < 2) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      touchX = null;
+      if (Math.abs(dx) > 50) viewShow(vAt + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  }
+
   /* ------------------------------------------------------------ drawers */
   var lastFocus = null;
   function openDrawer(id) {
@@ -235,6 +313,11 @@
   /* ------------------------------------------------------------ clicks */
   document.addEventListener('click', function (e) {
     var t = e.target, el;
+    if (viewer && (el = t.closest('a[data-view]')) && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      viewOpen(el);
+      return;
+    }
     if ((el = t.closest('[data-drawer]'))) { openDrawer(el.getAttribute('data-drawer')); return; }
     if ((el = t.closest('[data-close]'))) { closeDrawers(); return; }
     if ((el = t.closest('[data-dclose]'))) { el.closest('dialog').close(); return; }

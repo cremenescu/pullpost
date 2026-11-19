@@ -164,11 +164,11 @@ final class ThemeA extends Theme
             . '<div class="quiet"><button type="button" data-act="refetch" data-code="' . e($m['code']) . '">' . icon('redo') . e(t('again')) . '</button>'
             . '<button type="button"' . Card::delAttrs($m['del']) . '>' . icon('trash') . e(t('del')) . '</button></div></aside>';
 
-        $h .= '<ol class="slides' . ($one !== null ? ' reel' : '') . '">';
+        $h .= '<ol class="slides' . ($one !== null ? ' reel' : '') . '" data-viewgroup>';
         foreach ($m['files'] as $i => $f) {
             $video = $f['type'] === 'video';
             $h .= '<li class="mount" style="--r:' . self::ROT[$i % count(self::ROT)] . 'deg">'
-                . '<a class="win" href="' . e($f['view']) . '" target="_blank" rel="noopener" title="' . e(t('open_name', ['name' => $f['name']])) . '">'
+                . '<a class="win" href="' . e($f['view']) . '"' . Card::viewAttrs($f) . ' title="' . e(t('open_name', ['name' => $f['name']])) . '">'
                 . '<img loading="lazy" src="' . e($f['small']) . '" alt="' . e(ucfirst($f['label'])) . '">' . ($video ? icon('play') : '') . '</a>'
                 . '<span class="ml"><span>' . $f['nn'] . '</span><span class="sz">' . e($f['size']) . '</span>'
                 . '<a href="' . e($f['href']) . '" download title="' . e($f['name']) . '" aria-label="' . e(t('dl_name', ['name' => $f['name']])) . '">' . icon('down') . '</a>'
